@@ -14,9 +14,13 @@ class RedirectLink extends Model
      */
     protected $fillable = [
         'shortlink_id',
+        'referer_host',
+        'referer_url',
+        'referer_query',
         'ip',
         'user_agent',
         'query_data',
+        'headers',
     ];
 
 }

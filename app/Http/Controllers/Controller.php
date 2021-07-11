@@ -58,6 +58,57 @@ class Controller extends BaseController
 
     }
 
-    
+    /**
+     * Определение хоста из ссылки
+     * 
+     * @param string|null $url
+     * @return string|null
+     */
+    public function getUrlHost($url = null) {
+
+        if (!$url)
+            return null;
+
+        return parse_url($url, PHP_URL_HOST);
+
+    }
+
+    /**
+     * Определение параметров запроса из ссылки
+     * 
+     * @param string|null $url
+     * @param bool $json Вывести в формате json-строки
+     * @return array|null
+     */
+    public function getUrlQuery($url = null, $json = false) {
+
+        if (!$url)
+            return null;
+
+        if (!$query = parse_url($url, PHP_URL_QUERY))
+            return null;
+
+        $params = [];        
+        $query = explode("&", $query);
+
+        if (is_array($query)) {
+
+            foreach ($query as $row) {
+
+                $row = explode("=", $row);
+
+                if (isset($row[0]) AND isset($row[1]))
+                    $params[$row[0]] = $row[1];
+
+            }
+
+        }
+
+        if ($json)
+            return \json_encode($params, JSON_UNESCAPED_UNICODE);
+
+        return $params;
+
+    }
 
 }

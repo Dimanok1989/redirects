@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\ShortLink;
+use App\Models\Shortlink;
 use App\Models\RedirectLink;
 use App\Models\RedirectBadLink;
 
@@ -44,16 +44,20 @@ class Redirects extends Controller
             return redirect($this->url_error);
         }
 
-        if (!$shortlink = ShortLink::find($id)) {
+        if (!$shortlink = Shortlink::find($id)) {
             $this->badRedirect($request, $link);
             return redirect($this->url_error . "?link={$link}");
         }
 
         RedirectLink::create([
             'shortlink_id' => $id,
+            'referer_host' => $this->getUrlHost($request->server('HTTP_REFERER')),
+            'referer_url' => $request->server('HTTP_REFERER'),
+            'referer_query' => $this->getUrlQuery($request->server('HTTP_REFERER'), true),
             'ip' => $request->ip(),
             'user_agent' => $request->header('User-Agent'),
             'query_data' => \json_encode($request->all(), JSON_UNESCAPED_UNICODE),
+            'headers' => \json_encode($request->header(), JSON_UNESCAPED_UNICODE),
         ]);
 
         $shortlink->redirects++;
@@ -75,9 +79,13 @@ class Redirects extends Controller
 
         return RedirectBadLink::create([
             'shortlink' => $link,
+            'referer_host' => $this->getUrlHost($request->server('HTTP_REFERER')),
+            'referer_url' => $request->server('HTTP_REFERER'),
+            'referer_query' => $this->getUrlQuery($request->server('HTTP_REFERER'), true),
             'ip' => $request->ip(),
             'user_agent' => $request->header('User-Agent'),
             'query_data' => \json_encode($request->all(), JSON_UNESCAPED_UNICODE),
+            'headers' => \json_encode($request->header(), JSON_UNESCAPED_UNICODE),
         ]);
 
     }

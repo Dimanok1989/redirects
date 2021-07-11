@@ -14,9 +14,13 @@ class RedirectBadLink extends Model
      */
     protected $fillable = [
         'shortlink',
+        'referer_host',
+        'referer_url',
+        'referer_query',
         'ip',
         'user_agent',
         'query_data',
+        'headers',
     ];
 
 }
